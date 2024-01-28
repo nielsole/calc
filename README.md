@@ -1,4 +1,4 @@
-# JustCalc simple CLI calculator
+# Calc simple CLI calculator
 
 A lot of times I just want to calculate something quickly.
 I hate having to resort to Google for calculating basic things.
