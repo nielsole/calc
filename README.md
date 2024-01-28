@@ -14,7 +14,7 @@ I hate having to resort to Google for calculating basic things.
 ## Usage
 
 ```
-$ ./mylang 
+$ ./calc 
 5*2^0.5*PI
 22.21441469
 4+2
