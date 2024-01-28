@@ -1,11 +1,12 @@
 %{
 #include <stdio.h>
+#include <stdlib.h>
 void yyerror(char *s);
 int yylex();
 int result;
 %}
 
-%union {int num;}
+%union {double num;}
 %start lines
 %token NUMBER END
 %type <num> expression number NUMBER addexpr multexpr divexpr minusexpr parenthesis
@@ -15,10 +16,10 @@ int result;
 
 %%
 
-lines : line lines
+lines : line END lines
         | line END
 
-line : expression END { printf("%d\n", $1); } ;
+line : expression { printf("%.10g\n", $1); } ;
 
 expression : multexpr 
            | divexpr

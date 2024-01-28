@@ -1,2 +1,4 @@
 mylang
 parser.tab.c
+*.tab.*
+lex.yy.c
