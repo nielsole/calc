@@ -6,28 +6,34 @@ int result;
 %}
 
 %union {int num;}
-%start line
+%start lines
 %token NUMBER END
-%type <num> expression number NUMBER addexpr multexpr divexpr minusexpr
+%type <num> expression number NUMBER addexpr multexpr divexpr minusexpr parenthesis
 %left '+' '-'
 %left '*' '/'
+%left '(' ')'
 
 %%
 
-line : expression END { printf("%d", $1); } ;
+lines : line lines
+        | line END
+
+line : expression END { printf("%d\n", $1); } ;
 
 expression : multexpr 
            | divexpr
            | addexpr
            | minusexpr
+           | parenthesis
            | number
            ;
 
-
+parenthesis : '(' expression ')' { $$ = $2; }
+    ;
 multexpr : expression '*' expression { $$ = $1 * $3; } ;
 divexpr : expression '/' expression { $$ = $1 / $3; } ;
 addexpr : expression '+' expression { $$ = $1 + $3; } ;
-minusexpr : expression '-' expression { $$ = $1 + $3; } ;
+minusexpr : expression '-' expression { $$ = $1 - $3; } ;
 
 number : NUMBER
        ;
