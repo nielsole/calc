@@ -10,6 +10,7 @@ I hate having to resort to Google for calculating basic things.
 * power, modulo
 * parenthesis
 * PI
+* ANS (contains the result of the last row)
 
 ## Usage
 

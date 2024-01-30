@@ -3,9 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <ctype.h>
 void yyerror(char *s);
 int yylex();
-int result;
+double result;
 double get_constant(char *s);
 %}
 
@@ -24,7 +25,7 @@ double get_constant(char *s);
 lines : line END lines
         | line END
 
-line : expression { printf("%.10g\n", $1); } ;
+line : expression { result = $1; printf("%.10g\n", $1); } ;
 
 expression : multexpr 
            | divexpr
@@ -63,9 +64,26 @@ void yyerror(char *s) {
     fprintf(stderr, "%s\n", s);
 }
 
+void stringupper(char * temp) {
+  char * name;
+  name = strtok(temp,":");
+
+  // Convert to upper case
+  char *s = name;
+  while (*s) {
+    *s = toupper((unsigned char) *s);
+    s++;
+  }
+
+}
+
 double get_constant(char *s) {
+    stringupper(s);
     if (strcmp(s, "PI") == 0) {
         return M_PI;
+    }
+    if (strcmp(s, "ANS") == 0) {
+        return result;
     }
     yyerror(s);
     return 0.0d;
