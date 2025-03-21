@@ -25,7 +25,6 @@ double get_constant(char *s);
 
 lines : line END lines
         | line END
-        | error END { yyerrok; }
         ;
 
 line : expression { 
@@ -44,7 +43,7 @@ line : expression {
         } else {
             printf("error\n");
         }
-        YYERROR; 
+        exit(1);
     }
      ;
 
@@ -60,8 +59,8 @@ expression : multexpr
            ;
 
 parenthesis : '(' expression ')' { $$ = $2; }
-           | '(' ')' { printf("error\n"); YYERROR; }
-           | '(' error ')' { printf("error\n"); YYERROR; }
+           | '(' ')' { printf("error\n"); exit(1); }
+           | '(' error ')' { printf("error\n"); exit(1); }
            ;
 
 multexpr : expression '*' expression { $$ = $1 * $3; } ;
@@ -69,7 +68,7 @@ multexpr : expression '*' expression { $$ = $1 * $3; } ;
 divexpr : expression '/' expression { 
             if ($3 == 0) {
                 printf("error\n");
-                YYERROR;
+                exit(1);
             }
             $$ = $1 / $3; 
         } ;
@@ -83,7 +82,7 @@ expexpr : expression '^' expression { $$ = pow($1, $3); } ;
 modexpr : expression '%' expression { 
             if ($3 == 0) {
                 printf("error\n");
-                YYERROR;
+                exit(1);
             }
             $$ = fmod($1, $3); 
         } ;
