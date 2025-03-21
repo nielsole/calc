@@ -4,6 +4,7 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
+#include <unistd.h>
 void yyerror(char *s);
 int yylex();
 double result;
@@ -27,8 +28,24 @@ lines : line END lines
         | error END { yyerrok; }
         ;
 
-line : expression { result = $1; printf("%.10g\n", $1); }
-     | /* empty */ { printf("error\n"); YYERROR; }
+line : expression { 
+        result = $1; 
+        if (isatty(0)) {
+            printf("%.10g\n🧮 ", $1);
+            fflush(stdout);
+        } else {
+            printf("%.10g\n", $1);
+        }
+    }
+     | /* empty */ { 
+        if (isatty(0)) {
+            printf("error\n🧮 ");
+            fflush(stdout);
+        } else {
+            printf("error\n");
+        }
+        YYERROR; 
+    }
      ;
 
 expression : multexpr 
@@ -85,7 +102,12 @@ prefix : '-' { $$ = -1; }
 
 %%
 void yyerror(char *s) {
-    printf("error\n");
+    if (isatty(0)) {
+        printf("error\n🧮 ");
+        fflush(stdout);
+    } else {
+        printf("error\n");
+    }
     exit(1);
 }
 
@@ -113,6 +135,10 @@ double get_constant(char *s) {
     exit(1);
 }
 
-int main (void) {
+int main(void) {
+    if (isatty(0)) {  /* If input is from terminal */
+        printf("🧮 ");
+        fflush(stdout);
+    }
     return yyparse();
 }
