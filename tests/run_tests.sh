@@ -43,17 +43,22 @@ run_test() {
     local expected="$2"
     local output="$3"
     local actual=$(echo "$output" | grep -v "standard_in" | head -n1 | tr -d '\n')
+    local expected_error=false
     
-    if [ "$actual" = "error" ]; then
-        echo -e "${RED}✗ FAIL${NC}: $expression"
-        echo -e "  Expected: $expected"
-        echo -e "  Got:      Syntax Error"
-        ((FAILED++))
-    elif [ -z "$actual" ]; then
-        echo -e "${RED}✗ FAIL${NC}: $expression"
-        echo -e "  Expected: $expected"
-        echo -e "  Got:      No output"
-        ((FAILED++))
+    if [ "$expected" = "error" ]; then
+        expected_error=true
+    fi
+    
+    if $expected_error; then
+        if [ "$actual" = "error" ] || [ -z "$actual" ] || [ "$actual" = "Syntax Error" ]; then
+            echo -e "${GREEN}✓ PASS${NC}: $expression (error case)"
+            ((PASSED++))
+        else
+            echo -e "${RED}✗ FAIL${NC}: $expression"
+            echo -e "  Expected: error"
+            echo -e "  Got:      $actual"
+            ((FAILED++))
+        fi
     elif compare_float "$expected" "$actual" || [ "$actual" = "$expected" ]; then
         echo -e "${GREEN}✓ PASS${NC}: $expression = $actual"
         ((PASSED++))

@@ -24,8 +24,12 @@ double get_constant(char *s);
 
 lines : line END lines
         | line END
+        | error END { yyerrok; }
+        ;
 
-line : expression { result = $1; printf("%.10g\n", $1); } ;
+line : expression { result = $1; printf("%.10g\n", $1); }
+     | /* empty */ { printf("error\n"); YYERROR; }
+     ;
 
 expression : multexpr 
            | divexpr
@@ -39,42 +43,62 @@ expression : multexpr
            ;
 
 parenthesis : '(' expression ')' { $$ = $2; }
-    ;
+           | '(' ')' { printf("error\n"); YYERROR; }
+           | '(' error ')' { printf("error\n"); YYERROR; }
+           ;
+
 multexpr : expression '*' expression { $$ = $1 * $3; } ;
-divexpr : expression '/' expression { $$ = $1 / $3; } ;
+
+divexpr : expression '/' expression { 
+            if ($3 == 0) {
+                printf("error\n");
+                YYERROR;
+            }
+            $$ = $1 / $3; 
+        } ;
+
 addexpr : expression '+' expression { $$ = $1 + $3; } ;
+
 minusexpr : expression '-' expression { $$ = $1 - $3; } ;
+
 expexpr : expression '^' expression { $$ = pow($1, $3); } ;
-modexpr : expression '%' expression { $$ = fmod($1, $3); } ;
+
+modexpr : expression '%' expression { 
+            if ($3 == 0) {
+                printf("error\n");
+                YYERROR;
+            }
+            $$ = fmod($1, $3); 
+        } ;
 
 number : NUMBER
        | CONSTANT { $$ = get_constant($1); }
        ;
 
 prefixes: prefix prefixes { $$ = $1 * $2; }
-    | prefix
-    ;
+        | prefix
+        ;
 
 prefix : '-' { $$ = -1; }
-    | '+' { $$ = 1; }
-    ;
+       | '+' { $$ = 1; }
+       ;
 
 %%
 void yyerror(char *s) {
-    fprintf(stderr, "%s\n", s);
+    printf("error\n");
+    exit(1);
 }
 
 void stringupper(char * temp) {
-  char * name;
-  name = strtok(temp,":");
+    char * name;
+    name = strtok(temp,":");
 
-  // Convert to upper case
-  char *s = name;
-  while (*s) {
-    *s = toupper((unsigned char) *s);
-    s++;
-  }
-
+    // Convert to upper case
+    char *s = name;
+    while (*s) {
+        *s = toupper((unsigned char) *s);
+        s++;
+    }
 }
 
 double get_constant(char *s) {
@@ -85,11 +109,10 @@ double get_constant(char *s) {
     if (strcmp(s, "ANS") == 0) {
         return result;
     }
-    yyerror(s);
-    return 0.0d;
+    printf("error\n");
+    exit(1);
 }
 
-int main (void)
-{
-  return yyparse ();
+int main (void) {
+    return yyparse();
 }

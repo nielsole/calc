@@ -24,3 +24,26 @@ $ ./calc
 -4
 ^C
 ```
+
+## Testing
+
+The calculator comes with a comprehensive test suite that verifies all functionality. To run the tests:
+
+```bash
+# First build the calculator if not already built
+make
+
+# Then run the test suite
+cd tests && ./run_tests.sh
+```
+
+The test suite includes:
+- Basic arithmetic operations (+, -, *, /, %, ^)
+- Order of operations
+- Decimal number handling
+- Constants (PI)
+- Multiple prefix combinations (-, +, --, ++, etc.)
+- Complex expressions with parentheses
+- ANS variable functionality
+
+Test cases are defined in `tests/test_cases.txt` and can be easily extended. The test runner provides colored output showing passed/failed tests with detailed error reporting.
