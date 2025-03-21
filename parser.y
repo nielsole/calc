@@ -5,9 +5,14 @@
 #include <math.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+
+char *line_read = NULL;
 void yyerror(char *s);
 int yylex();
-double result;
+double result = 0;  // Initialize to 0
+static int first_run = 1;  // Track if this is first calculation
 double get_constant(char *s);
 %}
 
@@ -28,13 +33,14 @@ lines : line END lines
         ;
 
 line : expression { 
-        result = $1; 
+        result = $1;
         if (isatty(0)) {
             printf("%.10g\n🧮 ", $1);
             fflush(stdout);
         } else {
             printf("%.10g\n", $1);
         }
+        first_run = 0;  // Mark that we've done at least one calculation
     }
      | /* empty */ { 
         if (isatty(0)) {
@@ -128,6 +134,10 @@ double get_constant(char *s) {
         return M_PI;
     }
     if (strcmp(s, "ANS") == 0) {
+        if (first_run) {
+            printf("error\n");
+            exit(1);
+        }
         return result;
     }
     printf("error\n");
@@ -136,6 +146,9 @@ double get_constant(char *s) {
 
 int main(void) {
     if (isatty(0)) {  /* If input is from terminal */
+        // Initialize readline
+        rl_bind_key('\t', rl_insert);
+        using_history();
         printf("🧮 ");
         fflush(stdout);
     }

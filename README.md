@@ -16,13 +16,16 @@ I hate having to resort to Google for calculating basic things.
 
 ```
 $ ./calc 
-5*2^0.5*PI
+🧮 5*2^0.5*PI
 22.21441469
-4+2
+🧮 4+2
 6
--2-2
+🧮 -2-2
 -4
-^C
+🧮 ans
+-4
+🧮 2/0
+error
 ```
 
 ## Testing
